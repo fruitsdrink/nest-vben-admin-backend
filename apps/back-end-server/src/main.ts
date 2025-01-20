@@ -12,7 +12,9 @@ async function bootstrap() {
 
   console.log(port);
   await app.listen(port, () => {
-    console.log(chalk.green(`Nest-Vben-Admin-Backend is running on: ${port}`));
+    console.log(
+      chalk.green(`Nest-Vben-Admin-Backend is running on: ${port} ^_^`),
+    );
   });
 }
 bootstrap();
