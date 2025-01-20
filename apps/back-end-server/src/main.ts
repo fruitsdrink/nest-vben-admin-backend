@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { Configuration } from './types';
+import chalk from 'chalk'; // 引入chalk模块
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,7 +12,7 @@ async function bootstrap() {
 
   console.log(port);
   await app.listen(port, () => {
-    console.log(`Nest-Vben-Admin-Backend is running on: ${port}`);
+    console.log(chalk.green(`Nest-Vben-Admin-Backend is running on: ${port}`));
   });
 }
 bootstrap();
