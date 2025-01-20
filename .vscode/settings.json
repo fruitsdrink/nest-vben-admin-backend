@@ -2,5 +2,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always",
     "source.organizeImports": "always"
+  },
+  "files.exclude": {
+    "dist": true
   }
 }

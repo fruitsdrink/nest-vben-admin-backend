@@ -1,6 +1,6 @@
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import chalk from 'chalk'; // 引入chalk模块
 import { AppModule } from './app.module';
 import { Configuration } from './types';
@@ -8,6 +8,12 @@ import { Configuration } from './types';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('/api');
+
+  // 全局拦截器
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
+  // 全局管道
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

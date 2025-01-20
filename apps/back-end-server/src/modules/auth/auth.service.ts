@@ -4,9 +4,9 @@ import { LoginDto } from './dto';
 @Injectable()
 export class AuthService {
   login(dto: LoginDto) {
+    console.log(dto);
     return {
-      isok: true,
-      ...dto,
+      id: 1,
     };
   }
 }
