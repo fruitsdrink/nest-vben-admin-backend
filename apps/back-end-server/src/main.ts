@@ -1,12 +1,15 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import chalk from 'chalk'; // 引入chalk模块
 import { AppModule } from './app.module';
 import { Configuration } from './types';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const configService = app.get(ConfigService) as ConfigService<Configuration>;
 
   app.setGlobalPrefix('/api');
 
@@ -20,7 +23,22 @@ async function bootstrap() {
     }),
   );
 
-  const configService = app.get(ConfigService) as ConfigService<Configuration>;
+  // swagger
+  const enableSwagger = configService.get('http.enableSwagger', {
+    infer: true,
+  });
+  if (enableSwagger) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Nest-Vben-Admin-Backend')
+      .setDescription('Nest Vben Admin 管理端接口文档')
+      .setVersion('1.0.0')
+      .build();
+    const documentFactory = () =>
+      SwaggerModule.createDocument(app, swaggerConfig);
+
+    SwaggerModule.setup('doc', app, documentFactory);
+  }
+
   const port = configService.get('http.port', { infer: true }); // 获取配置文件中的端口号
 
   await app.listen(port, () => {

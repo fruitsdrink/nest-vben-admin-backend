@@ -6,6 +6,7 @@ import {
   Post,
   SerializeOptions,
 } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto';
 
@@ -13,6 +14,7 @@ import { LoginDto } from './dto';
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
+  @ApiOperation({ summary: 'Login', description: '登录接口' })
   @SerializeOptions({
     excludePrefixes: ['password'],
   })
