@@ -1,5 +1,5 @@
-import { HttpResponseInterceptor } from '@app/utils';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { HttpFilter, HttpResponseInterceptor, Validate } from '@app/utils';
+import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -27,9 +27,12 @@ async function bootstrap() {
   // 全局拦截器
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
+  // 全局异常过滤器
+  app.useGlobalFilters(new HttpFilter());
+
   // 全局管道
   app.useGlobalPipes(
-    new ValidationPipe({
+    new Validate({
       whitelist: true,
     }),
   );
