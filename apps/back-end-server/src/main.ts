@@ -1,4 +1,9 @@
-import { HttpFilter, HttpResponseInterceptor, Validate } from '@app/system';
+import {
+  HttpFilter,
+  HttpResponseInterceptor,
+  showBanner,
+  Validate,
+} from '@app/system';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
@@ -64,8 +69,9 @@ async function bootstrap() {
   const port = configService.get('http.port', { infer: true }); // 获取配置文件中的端口号
 
   await app.listen(port, () => {
+    showBanner(); // 打印欢迎信息Banner();
     console.log(
-      chalk.green(`Nest-Vben-Admin-Backend is running on: ${port} ^_^`),
+      chalk.bold(`Nest-Vben-Admin-Backend is running on: ${port} ^_^`),
     );
   });
 }
