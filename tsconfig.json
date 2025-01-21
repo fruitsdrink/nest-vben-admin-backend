@@ -17,8 +17,11 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
     "paths": {
-      "@/*": ["apps/back-end-server/src/*"]
+      "@/*": ["apps/back-end-server/src/*"],
+      "@app/utils": ["libs/utils/src"],
+      "@app/utils/*": ["libs/utils/src/*"]
     }
   }
 }
