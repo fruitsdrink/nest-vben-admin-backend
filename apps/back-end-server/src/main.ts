@@ -1,13 +1,17 @@
+import { HttpResponseInterceptor } from '@app/utils';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import chalk from 'chalk'; // 引入chalk模块
+import { join } from 'path';
 import { AppModule } from './app.module';
 import { Configuration } from './types';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.enableCors();
 
   const configService = app.get(ConfigService) as ConfigService<Configuration>;
 
@@ -22,6 +26,14 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  // 全局拦截器
+  app.useGlobalInterceptors(new HttpResponseInterceptor());
+
+  // 静态资源
+  app.useStaticAssets(join(process.cwd(), 'public', 'back-end-server'), {
+    prefix: '/public',
+  });
 
   // swagger
   const enableSwagger = configService.get('http.enableSwagger', {
