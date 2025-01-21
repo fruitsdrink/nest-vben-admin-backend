@@ -11,10 +11,17 @@ import { Configuration } from './types';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.enableCors();
 
   const configService = app.get(ConfigService) as ConfigService<Configuration>;
 
+  // cors
+  const origin = configService.get('http.cors.origin', {
+    infer: true,
+  });
+  app.enableCors({
+    origin: origin ? origin : '*',
+  });
+  // 全局前缀
   app.setGlobalPrefix('/api');
 
   // 全局拦截器

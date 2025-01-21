@@ -3,5 +3,8 @@ export type Configuration = {
     host: string;
     port: number;
     enableSwagger: boolean;
+    cors: {
+      origin: string;
+    };
   };
 };
