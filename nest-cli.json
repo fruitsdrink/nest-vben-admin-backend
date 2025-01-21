@@ -28,13 +28,13 @@
         "tsConfigPath": "apps/app-server/tsconfig.app.json"
       }
     },
-    "utils": {
+    "system": {
       "type": "library",
-      "root": "libs/utils",
+      "root": "libs/system",
       "entryFile": "index",
-      "sourceRoot": "libs/utils/src",
+      "sourceRoot": "libs/system/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/utils/tsconfig.lib.json"
+        "tsConfigPath": "libs/system/tsconfig.lib.json"
       }
     }
   }

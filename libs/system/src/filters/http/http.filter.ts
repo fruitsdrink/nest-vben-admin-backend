@@ -1,4 +1,3 @@
-import { Res, T } from '@app/utils/types';
 import {
   ArgumentsHost,
   BadRequestException,
@@ -8,6 +7,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { Res, T } from 'libs/system/src/types';
 
 @Catch(HttpException)
 export class HttpFilter implements ExceptionFilter {

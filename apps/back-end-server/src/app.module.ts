@@ -1,8 +1,8 @@
 import configuration from '@/config/configuration';
-import { HttpLogMiddleware } from '@app/utils';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import dayjs from 'dayjs';
+import { HttpLogMiddleware } from 'libs/system/src';
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,

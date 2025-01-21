@@ -1,10 +1,10 @@
-import { Res, T } from '@app/utils';
 import {
   CallHandler,
   ExecutionContext,
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { Res, T } from 'libs/system/src';
 import { map, Observable } from 'rxjs';
 
 @Injectable()

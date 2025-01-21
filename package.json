@@ -32,6 +32,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dayjs": "^1.11.13",
+    "es-toolkit": "^1.31.0",
     "js-yaml": "^4.1.0",
     "nest-winston": "^1.10.1",
     "reflect-metadata": "^0.2.0",
