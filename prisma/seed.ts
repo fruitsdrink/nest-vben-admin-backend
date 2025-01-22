@@ -1,4 +1,4 @@
-import { hashPassword } from '@app/system';
+import { hashPassword } from '@lib/system';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();

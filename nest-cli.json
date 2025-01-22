@@ -6,7 +6,7 @@
     "deleteOutDir": true,
     "webpack": true,
     "tsConfigPath": "apps/back-end-server/tsconfig.app.json",
-    "assets": ["/**/resources/banner.txt"]
+    "assets": ["/**/resources/banner.txt", "**/config/config.yaml"]
   },
   "monorepo": true,
   "root": "apps/back-end-server",

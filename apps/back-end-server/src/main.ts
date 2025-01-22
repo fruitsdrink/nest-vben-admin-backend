@@ -3,13 +3,14 @@ import {
   HttpResponseInterceptor,
   showBanner,
   Validate,
-} from '@app/system';
+} from '@lib/system';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import chalk from 'chalk'; // 引入chalk模块
+import cookieParser from 'cookie-parser';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { Configuration } from './types';
@@ -18,6 +19,9 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const configService = app.get(ConfigService) as ConfigService<Configuration>;
+
+  // cookie
+  app.use(cookieParser());
 
   // cors
   const origin = configService.get('http.cors.origin', {

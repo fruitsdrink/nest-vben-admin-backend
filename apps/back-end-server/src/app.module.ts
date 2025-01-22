@@ -1,8 +1,9 @@
 import configuration from '@/config/configuration';
+import { HttpLogMiddleware, JwtAuthGuard, SystemModule } from '@lib/system';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import dayjs from 'dayjs';
-import { HttpLogMiddleware } from 'libs/system/src';
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
@@ -11,6 +12,43 @@ import { join } from 'path';
 import winston from 'winston';
 import { AuthModule } from './modules';
 
+const consoleTransport = new winston.transports.Console({
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.ms(),
+    nestWinstonModuleUtilities.format.nestLike('back-end-server', {
+      colors: true,
+      prettyPrint: true,
+      processId: true,
+      appName: true,
+    }),
+  ),
+});
+
+const fileTransport = new winston.transports.File({
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.ms(),
+    nestWinstonModuleUtilities.format.nestLike('back-end-server', {
+      colors: false,
+      prettyPrint: true,
+      processId: true,
+      appName: true,
+    }),
+  ),
+  filename: join(
+    process.cwd(),
+    'logs',
+    'back-end-server',
+    `${dayjs().format('YYYY-MM-DD')}.log`,
+  ),
+});
+
+const transports = [fileTransport] as any[];
+
+if (process.env.NODE_ENV === 'development') {
+  transports.push(consoleTransport);
+}
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -18,43 +56,18 @@ import { AuthModule } from './modules';
       load: [configuration],
     }),
     WinstonModule.forRoot({
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.ms(),
-            nestWinstonModuleUtilities.format.nestLike('back-end-server', {
-              colors: true,
-              prettyPrint: true,
-              processId: true,
-              appName: true,
-            }),
-          ),
-        }),
-        new winston.transports.File({
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.ms(),
-            nestWinstonModuleUtilities.format.nestLike('back-end-server', {
-              colors: false,
-              prettyPrint: true,
-              processId: true,
-              appName: true,
-            }),
-          ),
-          filename: join(
-            process.cwd(),
-            'logs',
-            'back-end-server',
-            `${dayjs().format('YYYY-MM-DD')}.log`,
-          ),
-        }),
-      ],
+      transports,
     }),
+    SystemModule,
     AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -20,8 +20,8 @@
     "esModuleInterop": true,
     "paths": {
       "@/*": ["apps/back-end-server/src/*"],
-      "@app/system": ["libs/system/src"],
-      "@app/system/*": ["libs/system/src/*"]
+      "@lib/system": ["libs/system/src"],
+      "@lib/system/*": ["libs/system/src/*"]
     }
   }
 }

@@ -7,4 +7,9 @@ export type Configuration = {
       origin: string;
     };
   };
+  jwt: {
+    secret: string;
+    expiresIn: string;
+    enableCookie: boolean;
+  };
 };

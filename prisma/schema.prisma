@@ -16,43 +16,49 @@ datasource db {
 // 系统用户
 model User {
   // 主键Id
-  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   // 登录用户
-  username      String
+  username     String
   // 登录密码
-  password      String
+  password     String
   // 用户昵称
-  nickname      String?
+  nickname     String?
   // 用户头像
-  avatar        String?
+  avatar       String?
   // 用户邮箱
-  email         String?
+  email        String?
   // 用户手机号
-  phone         String?
+  phone        String?
   // 用户性别 0 未知 1 男 2 女
-  gender        Int       @default(0)
+  gender       Int       @default(0)
   // 用户状态 0 禁用 1 启用
-  status        Int       @default(1)
+  status       Int       @default(1)
   // 排序编号
-  sort          BigInt    @default(0) @db.UnsignedBigInt
+  sort         BigInt    @default(0) @db.UnsignedBigInt
   // 微信openid
-  openId        String?   @map("openid")
+  openId       String?   @map("openid")
   // 备注
-  remark        String?
+  remark       String?
   // 用户创建时间
-  createdAt     DateTime  @default(now()) @map("created_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
   // 创建人
-  createdBy     BigInt?   @map("created_by")
+  createdBy    BigInt?   @map("created_by")
   // 用户更新时间
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
   // 更新人
-  updatedBy     BigInt?   @map("updated_by")
+  updatedBy    BigInt?   @map("updated_by")
   // 用户删除时间
-  deletedAt     BigInt    @default(0) @map("deleted_at") @db.UnsignedBigInt
+  deletedAt    BigInt    @default(0) @map("deleted_at") @db.UnsignedBigInt
   // 删除人
-  deletedBy     BigInt?   @map("deleted_by")
+  deletedBy    BigInt?   @map("deleted_by")
   // 用户最后登录时间
-  lastLoginTime DateTime? @map("last_login_time")
+  lastLoginAt  DateTime? @map("last_login_at")
+  // 用户最后登录IP
+  lastLoginIp  String?   @map("last_login_ip")
+  // Jwt Token
+  accessToken  String?   @map("access_token")
+  // Jwt Refresh Token
+  refreshToken String?   @map("refresh_token")
 
   // 所属部门Id
   departmentId Int?        @map("department_id") @db.UnsignedInt

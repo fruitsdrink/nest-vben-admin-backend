@@ -1,21 +1,30 @@
 import {
+  Inject,
   Injectable,
-  Logger,
+  LoggerService,
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  constructor(private readonly logger: Logger) {
-    super({
-      log: ['query', 'info', 'warn', 'error'],
-      errorFormat: 'colorless',
-    });
+  constructor(
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
+  ) {
+    super(
+      process.env.NODE_ENV === 'development'
+        ? {
+            log: ['query', 'info', 'warn', 'error'],
+            errorFormat: 'colorless',
+          }
+        : {},
+    );
 
     /** 解决 Do not know how to serialize a BigInt 错误 */
     (BigInt.prototype as any).toJSON = function () {
