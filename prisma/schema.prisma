@@ -12,3 +12,130 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+// 系统用户
+model User {
+  // 主键Id
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  // 登录用户
+  username      String
+  // 登录密码
+  password      String
+  // 用户昵称
+  nickname      String?
+  // 用户头像
+  avatar        String?
+  // 用户邮箱
+  email         String?
+  // 用户手机号
+  phone         String?
+  // 用户性别 0 未知 1 男 2 女
+  gender        Int       @default(0)
+  // 用户状态 0 禁用 1 启用
+  status        Int       @default(1)
+  // 排序编号
+  sort          BigInt    @default(0) @db.UnsignedBigInt
+  // 微信openid
+  openId        String?   @map("openid")
+  // 备注
+  remark        String?
+  // 用户创建时间
+  createdAt     DateTime  @default(now()) @map("created_at")
+  // 创建人
+  createdBy     BigInt?   @map("created_by")
+  // 用户更新时间
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  // 更新人
+  updatedBy     BigInt?   @map("updated_by")
+  // 用户删除时间
+  deletedAt     BigInt    @default(0) @map("deleted_at") @db.UnsignedBigInt
+  // 删除人
+  deletedBy     BigInt?   @map("deleted_by")
+  // 用户最后登录时间
+  lastLoginTime DateTime? @map("last_login_time")
+
+  // 所属部门Id
+  departmentId Int?        @map("department_id") @db.UnsignedInt
+  // 所属部门
+  department   Department? @relation(fields: [departmentId], references: [id])
+  // 角色Id
+  roleId       Int?        @db.UnsignedInt
+  // 角色
+  role         Role?       @relation(fields: [roleId], references: [id])
+
+  @@unique([email, deletedAt])
+  @@map("sys_user")
+}
+
+// 部门信息
+model Department {
+  // 主键Id
+  id     Int     @id @default(autoincrement()) @db.UnsignedInt
+  // 部门名称
+  name   String
+  // 部门负责人
+  leader String?
+  // 部门电话
+  phone  String?
+  // 有效状态 0 禁用 1 启用
+  status Int     @default(1)
+  // 排序编号
+  sort   Int     @default(0) @db.UnsignedInt
+  // 备注
+  remark String?
+
+  // 用户创建时间
+  createdAt DateTime @default(now()) @map("created_at")
+  // 创建人
+  createdBy BigInt?  @map("created_by")
+  // 用户更新时间
+  updatedAt DateTime @updatedAt @map("updated_at")
+  // 更新人
+  updatedBy BigInt?  @map("updated_by")
+  // 用户删除时间
+  deletedAt BigInt   @default(0) @map("deleted_at") @db.UnsignedBigInt
+  // 删除人
+  deletedBy BigInt?  @map("deleted_by")
+
+  // 父级部门Id
+  parentId Int?         @map("parent_id") @db.UnsignedInt
+  // 父级部门
+  parent   Department?  @relation("DepartmentParent", fields: [parentId], references: [id])
+  // 子部门
+  children Department[] @relation("DepartmentParent")
+  // 部门下的用户
+  users    User[]
+
+  @@unique([name, deletedAt])
+  @@map("sys_department")
+}
+
+model Role {
+  // 主键Id
+  id     Int     @id @default(autoincrement()) @db.UnsignedInt
+  // 角色名称
+  name   String
+  // 角色状态 0 禁用 1 启用
+  status Int     @default(1)
+  // 排序编号
+  sort   Int     @default(0) @db.UnsignedInt
+  // 备注
+  remark String?
+
+  // 用户创建时间
+  createdAt DateTime @default(now()) @map("created_at")
+  // 创建人
+  createdBy BigInt?  @map("created_by")
+  // 用户更新时间
+  updatedAt DateTime @updatedAt @map("updated_at")
+  // 更新人
+  updatedBy BigInt?  @map("updated_by")
+  // 用户删除时间
+  deletedAt BigInt   @default(0) @map("deleted_at") @db.UnsignedBigInt
+  // 删除人
+  deletedBy BigInt?  @map("deleted_by")
+
+  users User[]
+
+  @@map("sys_role")
+}
