@@ -5,7 +5,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { WinstonModule } from 'nest-winston';
-import { AuthModule, UserModule } from './modules';
+import { AuthModule, SysCacheModule, UserModule } from './modules';
 
 const transports = createTransport();
 
@@ -21,6 +21,7 @@ const transports = createTransport();
     SystemModule,
     AuthModule,
     UserModule,
+    SysCacheModule,
   ],
   controllers: [],
   providers: [

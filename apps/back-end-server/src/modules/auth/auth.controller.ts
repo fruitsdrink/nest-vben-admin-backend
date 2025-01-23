@@ -1,4 +1,5 @@
-import { Public } from '@lib/system';
+import { AuthUser } from '@/types/prisma';
+import { Public, User } from '@lib/system';
 import {
   Body,
   Controller,
@@ -34,6 +35,17 @@ export class AuthController {
     return await this.service.login(dto, ip, res);
   }
 
+  @ApiOperation({ summary: 'Logout', description: '登出接口' })
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(
+    @User() user: AuthUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return await this.service.logout(res, user);
+  }
+
+  // todo 实现权限码
   @Get('codes')
   codes() {
     return ['AC_100100', 'AC_100110', 'AC_100120', 'AC_100010'];

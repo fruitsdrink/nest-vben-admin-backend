@@ -1,4 +1,5 @@
 import { Configuration } from '@/types';
+import { AuthUser } from '@/types/prisma';
 import { comparePassword } from '@lib/system';
 import { PrismaService } from '@lib/system/modules';
 import { ForbiddenException, Injectable } from '@nestjs/common';
@@ -6,6 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { LoginDto } from './dto';
+
+const COOKIE_ACCESS_TOKEN = 'access_token';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +23,7 @@ export class AuthService {
     const accessToken = await this.getAccessToken(user.id);
     await this.updateUserLoginInfo(user.id, ip, accessToken);
     this.writeCookie(res, accessToken);
+
     return {
       id: Number(user.id),
       username: user.username,
@@ -95,13 +99,33 @@ export class AuthService {
   private writeCookie(res: Response, accessToken: string) {
     const isEnableCookie = this.config.get('jwt.enableCookie', { infer: true });
     if (isEnableCookie) {
-      res.cookie('access_token', accessToken, {
+      res.cookie(COOKIE_ACCESS_TOKEN, accessToken, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
       });
     } else {
-      res.clearCookie('access_token');
+      res.clearCookie(COOKIE_ACCESS_TOKEN);
+    }
+  }
+
+  /***
+   * 退出登录
+   * @param res 响应
+   * @param user 用户
+   */
+  async logout(res: Response, user: AuthUser) {
+    res.clearCookie(COOKIE_ACCESS_TOKEN);
+
+    if (user) {
+      const { id } = user;
+      await this.prisma.user.update({
+        where: { id },
+        data: {
+          accessToken: null,
+          refreshToken: null,
+        },
+      });
     }
   }
 }
