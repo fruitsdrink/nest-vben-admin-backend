@@ -6,9 +6,11 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import jsonwebtoken from 'jsonwebtoken';
+import ms from 'ms';
 import { LoginDto } from './dto';
 
-const COOKIE_ACCESS_TOKEN = 'access_token';
+export const COOKIE_REFRESH_TOKEN = 'refresh_token';
 
 @Injectable()
 export class AuthService {
@@ -20,9 +22,9 @@ export class AuthService {
 
   async login(dto: LoginDto, ip: string, res: Response) {
     const user = await this.validateUser(dto);
-    const accessToken = await this.getAccessToken(user.id);
-    await this.updateUserLoginInfo(user.id, ip, accessToken);
-    this.writeCookie(res, accessToken);
+    const { accessToken, refreshToken } = await this.getToken(user.id);
+    await this.updateUserLoginInfo(user.id, ip, accessToken, refreshToken);
+    this.writeCookie(res, refreshToken);
 
     return {
       id: Number(user.id),
@@ -62,10 +64,19 @@ export class AuthService {
    * @param id 用户id
    * @returns
    */
-  private async getAccessToken(id: bigint) {
+  private async getToken(id: bigint) {
     const payload = { sub: id };
-    const token = await this.jwtService.signAsync(payload);
-    return token;
+    const accessToken = await this.jwtService.signAsync(payload);
+    const jwtExpireIn = this.config.get('jwt.expiresIn', {
+      infer: true,
+    }) as ms.StringValue;
+    const jwtSecret = this.config.get('jwt.secret', { infer: true });
+    const jwtExpireInMs = ms(jwtExpireIn);
+    const refreshExpireInMs = (jwtExpireInMs + ms('1d')) / 1000;
+    const refreshToken = jsonwebtoken.sign(payload, jwtSecret, {
+      expiresIn: refreshExpireInMs,
+    });
+    return { accessToken, refreshToken };
   }
 
   /**
@@ -78,6 +89,7 @@ export class AuthService {
     userId: bigint,
     ip: string,
     accessToken: string,
+    refreshToken: string,
   ) {
     await this.prisma.user.update({
       where: {
@@ -87,6 +99,7 @@ export class AuthService {
         lastLoginAt: new Date(),
         lastLoginIp: ip,
         accessToken,
+        refreshToken,
       },
     });
   }
@@ -96,16 +109,16 @@ export class AuthService {
    * @param res 响应
    * @param accessToken 访问令牌
    */
-  private writeCookie(res: Response, accessToken: string) {
+  private writeCookie(res: Response, refreshToken: string) {
     const isEnableCookie = this.config.get('jwt.enableCookie', { infer: true });
     if (isEnableCookie) {
-      res.cookie(COOKIE_ACCESS_TOKEN, accessToken, {
+      res.cookie(COOKIE_REFRESH_TOKEN, refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
       });
     } else {
-      res.clearCookie(COOKIE_ACCESS_TOKEN);
+      res.clearCookie(COOKIE_REFRESH_TOKEN);
     }
   }
 
@@ -115,7 +128,7 @@ export class AuthService {
    * @param user 用户
    */
   async logout(res: Response, user: AuthUser) {
-    res.clearCookie(COOKIE_ACCESS_TOKEN);
+    res.clearCookie(COOKIE_REFRESH_TOKEN);
 
     if (user) {
       const { id } = user;
@@ -127,5 +140,23 @@ export class AuthService {
         },
       });
     }
+  }
+
+  async refresh(user: AuthUser) {
+    const { id } = user;
+    const currentUser = await this.prisma.user.findFirst({
+      where: {
+        id,
+        deletedAt: 0,
+        status: 1,
+      },
+    });
+    if (!currentUser) {
+      return '';
+    }
+    const { accessToken } = await this.getToken(currentUser.id);
+    return {
+      data: accessToken,
+    };
   }
 }

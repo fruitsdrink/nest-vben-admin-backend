@@ -45,6 +45,11 @@ export class AuthController {
     return await this.service.logout(res, user);
   }
 
+  @Post('refresh')
+  async refresh(@User() user: AuthUser) {
+    return await this.service.refresh(user);
+  }
+
   // todo 实现权限码
   @Get('codes')
   codes() {

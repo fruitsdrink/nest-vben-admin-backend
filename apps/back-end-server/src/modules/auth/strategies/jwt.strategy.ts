@@ -1,11 +1,12 @@
 import { Configuration, JwtPayload } from '@/types';
 import { PrismaService } from '@lib/system/modules';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { Strategy } from 'passport-jwt';
+import { COOKIE_REFRESH_TOKEN } from '../auth.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -34,43 +35,57 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       },
     });
     if (!user) {
-      throw new ForbiddenException('用户不存在或已被禁用');
+      throw new UnauthorizedException('用户不存在或已被禁用');
     }
 
     const accessToken = this.getAccessToken(req);
     if (!accessToken) {
-      throw new ForbiddenException('未登录');
+      throw new UnauthorizedException('未登录');
     }
 
-    if (user.accessToken !== accessToken) {
-      throw new ForbiddenException('登录状态已失效');
+    if (user.accessToken !== accessToken && user.refreshToken !== accessToken) {
+      throw new UnauthorizedException('登录状态已失效');
+    }
+    if (!this.validateToken(accessToken)) {
+      throw new UnauthorizedException('登录状态已失效');
     }
 
     return user;
   }
 
-  private getAccessToken(req: Request) {
-    let token = null;
-    if (req && req.cookies) {
-      token = req.cookies['access_token'];
-    }
-    if (!token) {
-      // 从header中获取
-      token = req.headers.authorization?.split(' ')[1];
-    }
+  private getAccessToken(req: Request): string {
+    try {
+      let token = '';
 
-    if (token) {
-      // 判断token是否过期
-      const decoded = this.jwtService.verify(token, {
-        secret: this.config.get('jwt.secret', { infer: true }),
-      }) as JwtPayload & { exp: number };
-      if (!decoded) {
-        return '';
+      if (!token && req.headers.authorization) {
+        // 从header中获取
+        token = req.headers.authorization?.split(' ')[1];
       }
-      if (decoded.exp < Date.now() / 1000) {
-        return '';
+
+      if (token) {
+        const isValid = this.validateToken(token);
+        if (!isValid) {
+          token = this.getTokenFromCookie(req);
+        }
+        return token;
+      } else {
+        return this.getTokenFromCookie(req);
       }
+    } catch {
+      throw new UnauthorizedException();
     }
-    return token;
+  }
+
+  private getTokenFromCookie(req: Request) {
+    console.log('cookie:', req.cookies[COOKIE_REFRESH_TOKEN]);
+    return req.cookies[COOKIE_REFRESH_TOKEN];
+  }
+
+  private validateToken(token: string) {
+    try {
+      return this.jwtService.verify(token);
+    } catch {
+      return false;
+    }
   }
 }
