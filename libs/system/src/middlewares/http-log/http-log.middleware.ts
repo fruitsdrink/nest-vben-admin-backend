@@ -105,7 +105,7 @@ const getResponseLog = (
       statusCode: res.statusCode,
       headers: res.getHeaders() ? JSON.stringify(res.getHeaders()) : '',
       statusMessage: res.statusMessage,
-      body: JSON.parse(body) || body || {},
+      body: body ? JSON.parse(body) || body || {} : {},
       // Returns a shallow copy of the current outgoing headers
     };
     const duration = getDuration(start);

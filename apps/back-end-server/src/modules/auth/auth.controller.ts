@@ -1,5 +1,4 @@
-import { AuthUser } from '@/types/prisma';
-import { User } from '@lib/system';
+import { Public } from '@lib/system';
 import {
   Body,
   Controller,
@@ -24,21 +23,19 @@ export class AuthController {
   @SerializeOptions({
     excludePrefixes: ['password'],
   })
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  login(
+  async login(
     @Body() dto: LoginDto,
     @RealIP() ip: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.service.login(dto, ip, res);
+    return await this.service.login(dto, ip, res);
   }
 
-  @Get('test')
-  testAuth(@User() user: AuthUser) {
-    console.log(user);
-    return {
-      isok: true,
-    };
+  @Get('codes')
+  codes() {
+    return ['AC_100100', 'AC_100110', 'AC_100120', 'AC_100010'];
   }
 }

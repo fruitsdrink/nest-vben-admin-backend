@@ -21,7 +21,9 @@ export class AuthService {
     await this.updateUserLoginInfo(user.id, ip, accessToken);
     this.writeCookie(res, accessToken);
     return {
-      id: user.id,
+      id: Number(user.id),
+      username: user.username,
+      roles: [],
       accessToken,
     };
   }
