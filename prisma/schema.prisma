@@ -64,11 +64,10 @@ model User {
   departmentId Int?        @map("department_id") @db.UnsignedInt
   // 所属部门
   department   Department? @relation(fields: [departmentId], references: [id])
-  // 角色Id
-  roleId       Int?        @db.UnsignedInt
   // 角色
-  role         Role?       @relation(fields: [roleId], references: [id])
+  roles        Role[]
 
+  @@unique([username, deletedAt])
   @@unique([email, deletedAt])
   @@map("sys_user")
 }
