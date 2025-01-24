@@ -23,6 +23,8 @@ model User {
   password     String
   // 用户昵称
   nickname     String?
+  // 真实姓名
+  realName     String?   @map("real_name")
   // 用户头像
   avatar       String?
   // 用户邮箱
@@ -59,6 +61,8 @@ model User {
   accessToken  String?   @map("access_token")
   // Jwt Refresh Token
   refreshToken String?   @map("refresh_token")
+  // 是否是管理员
+  isAdmin      Int       @default(0) @map("is_admin") @db.UnsignedInt
 
   // 所属部门Id
   departmentId Int?        @map("department_id") @db.UnsignedInt

@@ -27,8 +27,10 @@ export class UserService {
     return {
       id: Number(user.id),
       username: user.username,
+      realName: user.realName || user.nickname,
       email: user.email,
       avatar,
+      isAdmin: user.isAdmin ? 1 : 0,
       roles: [],
     };
   }
