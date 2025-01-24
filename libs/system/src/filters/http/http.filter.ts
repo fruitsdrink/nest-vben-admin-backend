@@ -37,7 +37,7 @@ export class HttpFilter implements ExceptionFilter {
                 const jsonError = JSON.parse(error);
                 return jsonError;
               })
-            : exception.name,
+            : (exception.message ?? exception.name),
       });
     }
     const status = exception.getStatus();
@@ -45,7 +45,7 @@ export class HttpFilter implements ExceptionFilter {
     const data: Res<T> = {
       code: status,
       message: exception.message,
-      error: exception.name,
+      error: exception.message ?? exception.name,
     };
     response.status(status).json(data);
   }

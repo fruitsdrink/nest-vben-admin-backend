@@ -20,7 +20,7 @@ import { LoginDto } from './dto';
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
-  @ApiOperation({ summary: 'Login', description: '登录接口' })
+  @ApiOperation({ summary: '登录接口' })
   @SerializeOptions({
     excludePrefixes: ['password'],
   })
@@ -35,7 +35,7 @@ export class AuthController {
     return await this.service.login(dto, ip, res);
   }
 
-  @ApiOperation({ summary: 'Logout', description: '登出接口' })
+  @ApiOperation({ summary: '登出接口' })
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(
@@ -45,12 +45,14 @@ export class AuthController {
     return await this.service.logout(res, user);
   }
 
+  @ApiOperation({ summary: '刷新token' })
   @Post('refresh')
   async refresh(@User() user: AuthUser) {
     return await this.service.refresh(user);
   }
 
   // todo 实现权限码
+  @ApiOperation({ summary: '权限码' })
   @Get('codes')
   codes() {
     return ['AC_100100', 'AC_100110', 'AC_100120', 'AC_100010'];

@@ -30,10 +30,23 @@
 - [ ] 前端：删除演示菜单
 - [x] 前端：创建基础信息路由菜单
 - [x] 后端：部门管理接口
-- [ ] 前端：部门管理页面
+- [x] 前端：部门管理页面
 - [ ] 后端：角色管理接口
 - [ ] 前端：角色管理页面
 - [ ] 后端：用户管理接口
 - [ ] 前端：用户管理页面
 - [ ] 后端：菜单管理接口
 - [ ] 前端：菜单管理页面
+
+## Vben修改
+
+## apps
+
+- 增加tyeps目录
+- 增加components目录
+- 增加views/baseinfo目录
+- 增加api/baseinfo目录
+
+## internal/lint-configs
+
+- 修改prettier-config/index.mjs `printWidth: 120`
