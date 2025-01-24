@@ -1,9 +1,10 @@
-export class PaginationParams {
+export class PaginationParams<T> {
   keyword?: string;
   page: number;
   pageSize: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  data?: Omit<T, 'page' | 'pageSize' | 'sortBy' | 'sortOrder' | 'keyword'>;
 
   static orderBy(options: { sortBy?: string; sortOrder?: 'asc' | 'desc' }) {
     const { sortBy, sortOrder } = options;

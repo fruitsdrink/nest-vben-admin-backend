@@ -48,9 +48,16 @@ export class DepartmentService {
     });
   }
 
-  async findList(pagination: PaginationParams, dto: FindListDto) {
-    const { keyword, page, pageSize, sortBy, sortOrder } = pagination;
-    const { status } = dto;
+  async findList(pagination: PaginationParams<FindListDto>) {
+    const {
+      keyword,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+      data: { status },
+    } = pagination;
+
     let where: Prisma.DepartmentWhereInput = {
       deletedAt: 0,
     };

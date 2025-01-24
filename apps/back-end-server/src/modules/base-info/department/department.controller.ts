@@ -31,10 +31,9 @@ export class DepartmentController {
   @ApiOperation({ summary: '获取部门列表' })
   @Get()
   async findList(
-    @Pagination() pagination: PaginationParams,
-    @Query() dto: FindListDto,
+    @Pagination() pagination: PaginationParams<FindListDto>,
   ): Promise<PaginationResult<Department>> {
-    return await this.service.findList(pagination, dto);
+    return await this.service.findList(pagination);
   }
 
   @ApiOperation({ summary: '查询部门' })
