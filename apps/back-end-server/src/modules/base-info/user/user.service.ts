@@ -29,23 +29,38 @@ export class UserService {
    * 获取当前用户信息
    * @param user 当前登录用户
    */
-  info(user: AuthUser) {
+  async info(user: AuthUser) {
     if (!user) {
       throw new UnauthorizedException('用户未登录');
     }
+    const currentUser = await this.prisma.user.findUnique({
+      include: {
+        department: true,
+        roles: true,
+      },
+      where: {
+        id: user.id,
+        deletedAt: 0,
+      },
+    });
+
+    if (!currentUser) {
+      throw new UnauthorizedException('用户不存在');
+    }
+
     const host = this.config.get('http.host', { infer: true });
-    const avatar = user.avatar
-      ? `${host}/${user.avatar}`
+    const avatar = currentUser.avatar
+      ? `${host}/${currentUser.avatar}`
       : `${host}/public/images/avatar.webp`;
 
     return {
-      id: Number(user.id),
-      username: user.username,
-      realName: user.realName || user.nickName,
-      email: user.email,
+      id: currentUser.id,
+      username: currentUser.username,
+      realName: currentUser.realName || currentUser.nickName,
+      email: currentUser.email,
       avatar,
-      isAdmin: user.isAdmin ? 1 : 0,
-      roles: [],
+      isAdmin: currentUser.isAdmin ? 1 : 0,
+      roles: currentUser.roles ? currentUser.roles.map((r) => r.id) : [],
     };
   }
 
@@ -59,9 +74,6 @@ export class UserService {
 
     const { departmentId, roles, ...rest } = data;
 
-    if (departmentId === undefined) {
-      throw new BadRequestException('请选择部门');
-    }
     return await this.prisma.user.create({
       data: {
         ...rest,
@@ -85,30 +97,21 @@ export class UserService {
 
     const { departmentId, roles, ...rest } = data;
 
-    this.prisma.$transaction(async (tx) => {
-      await tx.user.update({
-        where: { id },
-        data: {
-          roles: {
-            deleteMany: roles.map((id) => ({ id })),
-          },
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        ...rest,
+        updatedAt: new Date(),
+        updatedBy: userId,
+        department: departmentId
+          ? { connect: { id: departmentId } }
+          : {
+              disconnect: true,
+            },
+        roles: {
+          set: roles && roles.length ? roles.map((id) => ({ id })) : [],
         },
-      });
-
-      return await tx.user.update({
-        where: { id },
-        data: {
-          ...rest,
-          updatedAt: new Date(),
-          updatedBy: userId,
-          department: departmentId
-            ? { connect: { id: departmentId } }
-            : {
-                disconnect: true,
-              },
-          roles: roles && { connect: roles.map((id) => ({ id })) },
-        },
-      });
+      },
     });
   }
 
@@ -268,9 +271,16 @@ export class UserService {
         id,
         deletedAt: 0,
       },
+      include: {
+        roles: true,
+      },
     });
+
     this.deleteSensitiveInfo(data);
-    return data;
+    return {
+      ...data,
+      roles: data.roles.map((item) => item.id),
+    };
   }
 
   /**
@@ -293,33 +303,30 @@ export class UserService {
   ) {
     const { username, email, avatar, departmentId, roles } = dto;
 
-    const [userExist, emailExist, departmentExist] =
-      await this.prisma.$transaction([
+    const [userExist, emailExist, departmentExist] = await Promise.all([
+      this.prisma.user.findFirst({
+        where: {
+          username,
+          deletedAt: 0,
+          id: id ? { not: id } : undefined,
+        },
+      }),
+      email &&
         this.prisma.user.findFirst({
           where: {
-            username,
+            email,
             deletedAt: 0,
             id: id ? { not: id } : undefined,
           },
         }),
-        email
-          ? this.prisma.user.findFirst({
-              where: {
-                email,
-                deletedAt: 0,
-                id: id ? { not: id } : undefined,
-              },
-            })
-          : null,
-        departmentId
-          ? this.prisma.department.findFirst({
-              where: {
-                id: departmentId,
-                deletedAt: 0,
-              },
-            })
-          : null,
-      ]);
+      departmentId &&
+        this.prisma.department.findFirst({
+          where: {
+            id: departmentId,
+            deletedAt: 0,
+          },
+        }),
+    ]);
 
     if (userExist) {
       throw new BadRequestException(`用户名称已存在`);
@@ -334,17 +341,18 @@ export class UserService {
       this.validateAvatar(avatar);
     }
     if (roles && roles.length > 0) {
-      roles.forEach(async (id) => {
+      for (let i = 0; i < roles.length; i++) {
+        const id = roles[i];
         const role = await this.prisma.role.findFirst({
           where: {
             id,
             deletedAt: 0,
           },
         });
-        if (!role) {
+        if (role === null || role === undefined) {
           throw new BadRequestException(`角色不存在`);
         }
-      });
+      }
     }
 
     return formatDto(dto);
@@ -367,8 +375,12 @@ export class UserService {
    */
   private async validateOnUpdate(id: bigint, dto: EditDto) {
     const data = await this.validateOnCreateAndUpdate(dto, id);
+
     if (data['password']) {
       delete data['password'];
+    }
+    if (!data.roles) {
+      data.roles = [];
     }
     return data as EditDto;
   }
