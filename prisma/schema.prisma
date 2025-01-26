@@ -146,5 +146,6 @@ model Role {
 
   users User[]
 
+  @@unique([name, deletedAt])
   @@map("sys_role")
 }

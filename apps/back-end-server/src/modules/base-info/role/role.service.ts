@@ -9,16 +9,16 @@ import { Prisma } from '@prisma/client';
 import { CreateDto, EditDto, FindListDto, FindManyDto } from './dto';
 
 @Injectable()
-export class DepartmentService {
+export class RoleService {
   constructor(private readonly prisma: PrismaService) {}
   /**
-   * 创建部门
-   * @param dto 创建部门参数
+   * 创建角色前校验
+   * @param dto 创建角色参数
    * @param userId 操作人id
    */
   async create(dto: CreateDto, userId: bigint) {
     await this.validateOnCreate(dto);
-    return await this.prisma.department.create({
+    return await this.prisma.role.create({
       data: {
         ...dto,
         status: dto.status ?? 1,
@@ -31,7 +31,7 @@ export class DepartmentService {
   async update(id: number, dto: EditDto, userId: bigint) {
     const { dto: formData } = await this.validateOnUpdate(id, dto);
 
-    return await this.prisma.department.update({
+    return await this.prisma.role.update({
       where: { id },
       data: {
         ...formData,
@@ -43,7 +43,7 @@ export class DepartmentService {
 
   async delete(id: number, userId: bigint) {
     await this.validateOnDelete(id);
-    return await this.prisma.department.update({
+    return await this.prisma.role.update({
       where: { id },
       data: {
         deletedAt: Date.now(),
@@ -62,7 +62,7 @@ export class DepartmentService {
       data: { status },
     } = pagination;
 
-    let where: Prisma.DepartmentWhereInput = {
+    let where: Prisma.RoleWhereInput = {
       deletedAt: 0,
     };
     if (keyword) {
@@ -80,11 +80,10 @@ export class DepartmentService {
       };
     }
     const [items, total] = await this.prisma.$transaction([
-      this.prisma.department.findMany({
+      this.prisma.role.findMany({
         where,
         include: {
           users: true,
-          children: true,
         },
         ...PaginationParams.pagination({
           page,
@@ -93,11 +92,11 @@ export class DepartmentService {
           sortOrder,
         }),
       }),
-      this.prisma.department.count({ where }),
+      this.prisma.role.count({ where }),
     ]);
 
     items.map((item) => {
-      item['canDelete'] = item.users.length === 0 && item.children.length === 0;
+      item['canDelete'] = item.users.length === 0;
       item['canEdit'] = true;
     });
 
@@ -106,7 +105,7 @@ export class DepartmentService {
 
   async findMany(dto: FindManyDto) {
     const { keyword } = dto;
-    return await this.prisma.department.findMany({
+    return await this.prisma.role.findMany({
       where: {
         deletedAt: 0,
         status: 1,
@@ -120,7 +119,7 @@ export class DepartmentService {
   }
 
   async findById(id: number) {
-    return await this.prisma.department.findFirst({
+    return await this.prisma.role.findFirst({
       where: {
         id,
         deletedAt: 0,
@@ -129,36 +128,36 @@ export class DepartmentService {
   }
 
   /**
-   * 验证新增部门
-   * @param dto 创建部门参数
+   * 验证新增角色
+   * @param dto 创建角色参数
    */
   private async validateOnCreate(dto: CreateDto) {
     const { name } = dto;
-    const department = await this.prisma.department.findFirst({
+    const role = await this.prisma.role.findFirst({
       where: {
         name,
         deletedAt: 0,
       },
     });
-    if (department) {
-      throw new BadRequestException(`部门名称已存在`);
+    if (role) {
+      throw new BadRequestException(`角色名称已存在`);
     }
   }
 
   private async validateOnUpdate(id: number, dto: EditDto) {
-    const department = await this.prisma.department.findFirst({
+    const role = await this.prisma.role.findFirst({
       where: {
         id,
         deletedAt: 0,
       },
     });
-    if (!department) {
-      throw new BadRequestException(`部门不存在`);
+    if (!role) {
+      throw new BadRequestException(`角色不存在`);
     }
 
     const { name } = dto;
 
-    const exist = await this.prisma.department.findFirst({
+    const exist = await this.prisma.role.findFirst({
       where: {
         name,
         deletedAt: 0,
@@ -168,38 +167,33 @@ export class DepartmentService {
       },
     });
     if (exist) {
-      throw new BadRequestException(`部门名称已存在`);
+      throw new BadRequestException(`角色名称已存在`);
     }
 
     return {
-      department,
+      role,
       dto: formatDto(dto),
     };
   }
 
   private async validateOnDelete(id: number) {
-    const department = await this.prisma.department.findFirst({
+    const role = await this.prisma.role.findFirst({
       where: {
         id,
         deletedAt: 0,
       },
       include: {
         users: true,
-        children: true,
       },
     });
-    if (!department) {
-      throw new BadRequestException(`部门不存在`);
+    if (!role) {
+      throw new BadRequestException(`角色不存在`);
     }
 
-    if (department.users.length > 0) {
-      throw new BadRequestException(`部门下存在用户`);
+    if (role.users.length > 0) {
+      throw new BadRequestException(`角色下存在用户`);
     }
 
-    if (department.children.length > 0) {
-      throw new BadRequestException(`部门下存在子部门`);
-    }
-
-    return department;
+    return role;
   }
 }

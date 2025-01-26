@@ -3,6 +3,7 @@ export * from './filters';
 export * from './guards';
 export * from './interceptors';
 export * from './middlewares';
+export * from './modules';
 export * from './systrem.module';
 export * from './types';
 export * from './utils';
