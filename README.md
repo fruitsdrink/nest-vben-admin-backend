@@ -56,7 +56,7 @@
 - [ ] 后端：消息管理接口
 - [ ] 前端：消息管理页面
 - [x] 后端：优化swagger参数
-- [ ] 后端：优化Dto名称(名称唯一)，解决swagger的schemas显示model不全问题
+- [x] 后端：优化Dto名称(名称唯一)，解决swagger的schemas显示model不全问题
 - [ ] 前端：修改用户表单隐藏密码字段
 
 ## Vben修改

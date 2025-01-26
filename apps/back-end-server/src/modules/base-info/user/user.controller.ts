@@ -89,7 +89,8 @@ export class UserController {
   ) {
     return await this.service.delete(id, user.id);
   }
-
+  @ApiOperation({ summary: '重置密码' })
+  @Post('baseinfo/user/reset-password')
   async resetPassword(
     @CurrentUser() user: AuthUser,
     @Body() dto: ResetPasswordDto,
