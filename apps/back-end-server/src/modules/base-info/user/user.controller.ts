@@ -17,15 +17,19 @@ import {
   Post,
   Put,
   Query,
+  Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { Response } from 'express';
 import {
   CreateUserDto,
+  EditPasswordDto,
   EditUserDto,
   FindUserListDto,
   FindUserManyDto,
   ResetPasswordDto,
+  ValidatePasswordDto,
 } from './dto';
 import { UserService } from './user.service';
 
@@ -89,6 +93,7 @@ export class UserController {
   ) {
     return await this.service.delete(id, user.id);
   }
+
   @ApiOperation({ summary: '重置密码' })
   @HttpCode(HttpStatus.OK)
   @Post('baseinfo/user/reset-password')
@@ -97,5 +102,26 @@ export class UserController {
     @Body() dto: ResetPasswordDto,
   ) {
     return await this.service.resetPassword(user.id, dto);
+  }
+
+  @ApiOperation({ summary: '验证密码' })
+  @Post('baseinfo/user/validate-password')
+  @HttpCode(HttpStatus.OK)
+  async validatePassword(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: ValidatePasswordDto,
+  ) {
+    return await this.service.validatePassword(user.id, dto);
+  }
+
+  @ApiOperation({ summary: '修改密码' })
+  @Post('baseinfo/user/edit-password')
+  @HttpCode(HttpStatus.OK)
+  async editPassword(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: EditPasswordDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return await this.service.editPassword(user.id, dto, response);
   }
 }

@@ -1,6 +1,7 @@
 import { Configuration } from '@/types';
 import { AuthUser } from '@/types/prisma';
 import {
+  comparePassword,
   formatDto,
   hashPassword,
   PaginationParams,
@@ -18,11 +19,16 @@ import { Prisma, User } from '@prisma/client';
 import fs from 'fs';
 import {
   CreateUserDto,
+  EditPasswordDto,
   EditUserDto,
   FindUserListDto,
   FindUserManyDto,
   ResetPasswordDto,
+  ValidatePasswordDto,
 } from './dto';
+
+import { COOKIE_REFRESH_TOKEN } from '@/modules/core/auth/auth.service';
+import { Response } from 'express';
 
 @Injectable()
 export class UserService {
@@ -321,6 +327,16 @@ export class UserService {
 
     this.deleteSensitiveInfo(user);
 
+    await this.prisma.user.update({
+      where: {
+        id: dto.userId,
+      },
+      data: {
+        accessToken: '',
+        refreshToken: '',
+      },
+    });
+
     return user;
   }
 
@@ -387,6 +403,78 @@ export class UserService {
     }
 
     return formatDto(dto);
+  }
+
+  /**
+   * 修改密码
+   * @param userId 当前用户id
+   */
+  async editPassword(userId: bigint, dto: EditPasswordDto, response: Response) {
+    if (!dto.newPassword) {
+      throw new BadRequestException(`新密码不能为空`);
+    }
+
+    if (!dto.password) {
+      throw new BadRequestException(`旧密码不能为空`);
+    }
+
+    if (dto.password === dto.newPassword) {
+      throw new BadRequestException(`新密码不能与旧密码相同`);
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new BadRequestException(`用户不存在`);
+    }
+
+    if (!comparePassword(dto.password, user.password)) {
+      throw new BadRequestException(`密码错误`);
+    }
+
+    const nwePwd = hashPassword(dto.newPassword);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: nwePwd, updatedAt: new Date(), updatedBy: userId },
+    });
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        accessToken: '',
+        refreshToken: '',
+      },
+    });
+
+    response.clearCookie(COOKIE_REFRESH_TOKEN);
+
+    return {
+      isok: true,
+    };
+  }
+
+  /**
+   * 验证密码
+   * @param userId 当前用户id
+   */
+  async validatePassword(userId: bigint, dto: ValidatePasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new BadRequestException(`用户不存在`);
+    }
+
+    if (!comparePassword(dto.password, user.password)) {
+      throw new BadRequestException(`密码错误`);
+    }
+
+    return {
+      isok: true,
+    };
   }
 
   /**
