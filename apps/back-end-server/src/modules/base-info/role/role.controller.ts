@@ -18,9 +18,14 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
-import { CreateDto, EditDto, FindListDto, FindManyDto } from './dto';
+import {
+  CreateRoleDto,
+  EditRoleDto,
+  FindRoleListDto,
+  FindRoleManyDto,
+} from './dto';
 import { RoleService } from './role.service';
 
 @ApiTags('角色管理')
@@ -29,16 +34,17 @@ export class RoleController {
   constructor(private readonly service: RoleService) {}
 
   @ApiOperation({ summary: '获取角色列表' })
+  @ApiQuery({ type: FindRoleListDto })
   @Get()
   async findList(
-    @Pagination() pagination: PaginationParams<FindListDto>,
+    @Pagination() pagination: PaginationParams<FindRoleListDto>,
   ): Promise<PaginationResult<Role>> {
     return await this.service.findList(pagination);
   }
 
   @ApiOperation({ summary: '查询角色' })
   @Get('find')
-  async findMany(@Query() dto: FindManyDto) {
+  async findMany(@Query() dto: FindRoleManyDto) {
     return await this.service.findMany(dto);
   }
 
@@ -52,7 +58,7 @@ export class RoleController {
   @ApiOperation({ summary: '创建角色' })
   @Post()
   @HttpCode(HttpStatus.OK)
-  async create(@Body() dto: CreateDto, @CurrentUser() user: AuthUser) {
+  async create(@Body() dto: CreateRoleDto, @CurrentUser() user: AuthUser) {
     return await this.service.create(dto, user.id);
   }
 
@@ -61,7 +67,7 @@ export class RoleController {
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: EditDto,
+    @Body() dto: EditRoleDto,
     @CurrentUser() user: AuthUser,
   ) {
     return await this.service.update(id, dto, user.id);

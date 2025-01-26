@@ -1,6 +1,6 @@
 import { IsNumberString, IsOptional, IsString } from 'class-validator';
 
-export class FindListDto {
+export class FindRoleListDto {
   @IsOptional()
   @IsString()
   keyword?: string;

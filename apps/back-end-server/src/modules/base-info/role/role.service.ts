@@ -6,7 +6,12 @@ import {
 } from '@lib/system';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { CreateDto, EditDto, FindListDto, FindManyDto } from './dto';
+import {
+  CreateRoleDto,
+  EditRoleDto,
+  FindRoleListDto,
+  FindRoleManyDto,
+} from './dto';
 
 @Injectable()
 export class RoleService {
@@ -16,7 +21,7 @@ export class RoleService {
    * @param dto 创建角色参数
    * @param userId 操作人id
    */
-  async create(dto: CreateDto, userId: bigint) {
+  async create(dto: CreateRoleDto, userId: bigint) {
     await this.validateOnCreate(dto);
     return await this.prisma.role.create({
       data: {
@@ -34,7 +39,7 @@ export class RoleService {
    * @param dto 更新参数
    * @param userId 操作人id
    */
-  async update(id: number, dto: EditDto, userId: bigint) {
+  async update(id: number, dto: EditRoleDto, userId: bigint) {
     const { dto: formData } = await this.validateOnUpdate(id, dto);
 
     return await this.prisma.role.update({
@@ -67,7 +72,7 @@ export class RoleService {
    * 分页查询角色列表
    * @param pagination 分页参数
    */
-  async findList(pagination: PaginationParams<FindListDto>) {
+  async findList(pagination: PaginationParams<FindRoleListDto>) {
     const {
       keyword,
       page,
@@ -122,7 +127,7 @@ export class RoleService {
    * 查询角色列表
    * @param dto 查询参数
    */
-  async findMany(dto: FindManyDto) {
+  async findMany(dto: FindRoleManyDto) {
     const { keyword } = dto;
     return await this.prisma.role.findMany({
       where: {
@@ -154,7 +159,7 @@ export class RoleService {
    * 验证新增角色
    * @param dto 创建角色参数
    */
-  private async validateOnCreate(dto: CreateDto) {
+  private async validateOnCreate(dto: CreateRoleDto) {
     const { name } = dto;
     const role = await this.prisma.role.findFirst({
       where: {
@@ -171,7 +176,7 @@ export class RoleService {
    * @param id 角色id
    * @param dto 编辑角色参数
    */
-  private async validateOnUpdate(id: number, dto: EditDto) {
+  private async validateOnUpdate(id: number, dto: EditRoleDto) {
     const role = await this.prisma.role.findFirst({
       where: {
         id,

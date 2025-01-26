@@ -18,7 +18,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import {
   CreateUserDto,
@@ -41,6 +41,7 @@ export class UserController {
   }
 
   @ApiOperation({ summary: '获取用户列表' })
+  @ApiQuery({ type: FindUserListDto })
   @Get('baseinfo/user')
   async findList(
     @Pagination() pagination: PaginationParams<FindUserListDto>,
