@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class FindListDto {
   @IsOptional()
@@ -6,6 +6,6 @@ export class FindListDto {
   keyword?: string;
 
   @IsOptional()
-  @IsString()
+  @IsNumberString()
   status?: string;
 }

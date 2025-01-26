@@ -28,6 +28,12 @@ export class DepartmentService {
     });
   }
 
+  /**
+   * 编辑部门
+   * @param id 部门id
+   * @param dto 编辑部门参数
+   * @param userId 操作人id
+   */
   async update(id: number, dto: EditDto, userId: bigint) {
     const { dto: formData } = await this.validateOnUpdate(id, dto);
 
@@ -41,6 +47,11 @@ export class DepartmentService {
     });
   }
 
+  /**
+   * 删除部门
+   * @param id 部门id
+   * @param userId 操作人id
+   */
   async delete(id: number, userId: bigint) {
     await this.validateOnDelete(id);
     return await this.prisma.department.update({
@@ -52,6 +63,10 @@ export class DepartmentService {
     });
   }
 
+  /**
+   * 分页查询部门列表
+   * @param pagination 分页参数
+   */
   async findList(pagination: PaginationParams<FindListDto>) {
     const {
       keyword,
@@ -104,6 +119,10 @@ export class DepartmentService {
     return PaginationResult.from(items, total);
   }
 
+  /**
+   * 查询部门列表
+   * @param dto 查询参数
+   */
   async findMany(dto: FindManyDto) {
     const { keyword } = dto;
     return await this.prisma.department.findMany({
@@ -119,6 +138,10 @@ export class DepartmentService {
     });
   }
 
+  /**
+   * 查询部门详情
+   * @param id 部门id
+   */
   async findById(id: number) {
     return await this.prisma.department.findFirst({
       where: {
@@ -145,6 +168,11 @@ export class DepartmentService {
     }
   }
 
+  /**
+   * 验证编辑部门
+   * @param id 部门id
+   * @param dto 编辑部门参数
+   */
   private async validateOnUpdate(id: number, dto: EditDto) {
     const department = await this.prisma.department.findFirst({
       where: {
@@ -177,6 +205,10 @@ export class DepartmentService {
     };
   }
 
+  /**
+   * 验证删除部门
+   * @param id 部门id
+   */
   private async validateOnDelete(id: number) {
     const department = await this.prisma.department.findFirst({
       where: {

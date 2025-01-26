@@ -12,7 +12,7 @@ import { CreateDto, EditDto, FindListDto, FindManyDto } from './dto';
 export class RoleService {
   constructor(private readonly prisma: PrismaService) {}
   /**
-   * 创建角色前校验
+   * 创建角色
    * @param dto 创建角色参数
    * @param userId 操作人id
    */
@@ -28,6 +28,12 @@ export class RoleService {
     });
   }
 
+  /**
+   * 编辑角色
+   * @param id 角色id
+   * @param dto 更新参数
+   * @param userId 操作人id
+   */
   async update(id: number, dto: EditDto, userId: bigint) {
     const { dto: formData } = await this.validateOnUpdate(id, dto);
 
@@ -41,6 +47,11 @@ export class RoleService {
     });
   }
 
+  /**
+   * 删除角色
+   * @param id 角色id
+   * @param userId 操作人id
+   */
   async delete(id: number, userId: bigint) {
     await this.validateOnDelete(id);
     return await this.prisma.role.update({
@@ -52,6 +63,10 @@ export class RoleService {
     });
   }
 
+  /**
+   * 分页查询角色列表
+   * @param pagination 分页参数
+   */
   async findList(pagination: PaginationParams<FindListDto>) {
     const {
       keyword,
@@ -103,6 +118,10 @@ export class RoleService {
     return PaginationResult.from(items, total);
   }
 
+  /**
+   * 查询角色列表
+   * @param dto 查询参数
+   */
   async findMany(dto: FindManyDto) {
     const { keyword } = dto;
     return await this.prisma.role.findMany({
@@ -118,6 +137,10 @@ export class RoleService {
     });
   }
 
+  /**
+   * 查询角色详情
+   * @param id 角色id
+   */
   async findById(id: number) {
     return await this.prisma.role.findFirst({
       where: {
@@ -143,7 +166,11 @@ export class RoleService {
       throw new BadRequestException(`角色名称已存在`);
     }
   }
-
+  /**
+   * 验证编辑角色
+   * @param id 角色id
+   * @param dto 编辑角色参数
+   */
   private async validateOnUpdate(id: number, dto: EditDto) {
     const role = await this.prisma.role.findFirst({
       where: {
@@ -176,6 +203,10 @@ export class RoleService {
     };
   }
 
+  /**
+   * 验证删除角色
+   * @param id 角色id
+   */
   private async validateOnDelete(id: number) {
     const role = await this.prisma.role.findFirst({
       where: {

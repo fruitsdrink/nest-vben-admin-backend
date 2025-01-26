@@ -25,7 +25,7 @@ async function seedUser() {
       id: 1,
       username: 'admin',
       password: hashPassword('admin123'),
-      nickname: 'admin',
+      nickName: 'admin',
     },
   });
 }

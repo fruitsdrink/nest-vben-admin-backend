@@ -1,5 +1,5 @@
-export const formatDto = (dto: object) => {
-  if (!dto) return dto;
+export const formatDto = <T extends object>(dto: T) => {
+  if (!dto) return dto; // 如果dto为空，直接返回
   // 如果不是对象类型，直接返回
   if (typeof dto !== 'object') return dto;
 
@@ -17,6 +17,10 @@ export const formatDto = (dto: object) => {
       dto[key] = formatDto(value);
     } else {
       dto[key] = value;
+    }
+
+    if (key === 'sort' && !value) {
+      dto[key] = 0;
     }
   });
 

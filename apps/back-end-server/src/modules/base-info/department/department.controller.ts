@@ -1,9 +1,9 @@
 import { AuthUser } from '@/types/prisma';
 import {
+  CurrentUser,
   Pagination,
   PaginationParams,
   PaginationResult,
-  User,
 } from '@lib/system';
 import {
   Body,
@@ -52,7 +52,7 @@ export class DepartmentController {
   @ApiOperation({ summary: '创建部门' })
   @Post()
   @HttpCode(HttpStatus.OK)
-  async create(@Body() dto: CreateDto, @User() user: AuthUser) {
+  async create(@Body() dto: CreateDto, @CurrentUser() user: AuthUser) {
     return await this.service.create(dto, user.id);
   }
 
@@ -62,7 +62,7 @@ export class DepartmentController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: EditDto,
-    @User() user: AuthUser,
+    @CurrentUser() user: AuthUser,
   ) {
     return await this.service.update(id, dto, user.id);
   }
@@ -70,7 +70,10 @@ export class DepartmentController {
   @ApiOperation({ summary: '删除部门' })
   @ApiParam({ name: 'id', type: Number, required: true, description: '部门Id' })
   @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number, @User() user: AuthUser) {
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: AuthUser,
+  ) {
     return await this.service.delete(id, user.id);
   }
 }

@@ -1,5 +1,5 @@
 import { AuthUser } from '@/types/prisma';
-import { Public, User } from '@lib/system';
+import { CurrentUser, Public } from '@lib/system';
 import {
   Body,
   Controller,
@@ -39,7 +39,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(
-    @User() user: AuthUser,
+    @CurrentUser() user: AuthUser,
     @Res({ passthrough: true }) res: Response,
   ) {
     return await this.service.logout(res, user);
@@ -47,7 +47,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '刷新token' })
   @Post('refresh')
-  async refresh(@User() user: AuthUser) {
+  async refresh(@CurrentUser() user: AuthUser) {
     return await this.service.refresh(user);
   }
 
