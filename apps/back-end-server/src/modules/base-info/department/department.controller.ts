@@ -18,10 +18,15 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Department } from '@prisma/client';
 import { DepartmentService } from './department.service';
-import { CreateDto, EditDto, FindListDto, FindManyDto } from './dto';
+import {
+  CreateDepartmentDto,
+  EditDepartmentDto,
+  FindDepartmentListDto,
+  FindDepartmentManyDto,
+} from './dto';
 
 @ApiTags('部门管理')
 @Controller('baseinfo/department')
@@ -29,16 +34,17 @@ export class DepartmentController {
   constructor(private readonly service: DepartmentService) {}
 
   @ApiOperation({ summary: '获取部门列表' })
+  @ApiQuery({ type: FindDepartmentListDto })
   @Get()
   async findList(
-    @Pagination() pagination: PaginationParams<FindListDto>,
+    @Pagination() pagination: PaginationParams<FindDepartmentListDto>,
   ): Promise<PaginationResult<Department>> {
     return await this.service.findList(pagination);
   }
 
   @ApiOperation({ summary: '查询部门' })
   @Get('find')
-  async findMany(@Query() dto: FindManyDto) {
+  async findMany(@Query() dto: FindDepartmentManyDto) {
     return await this.service.findMany(dto);
   }
 
@@ -52,7 +58,10 @@ export class DepartmentController {
   @ApiOperation({ summary: '创建部门' })
   @Post()
   @HttpCode(HttpStatus.OK)
-  async create(@Body() dto: CreateDto, @CurrentUser() user: AuthUser) {
+  async create(
+    @Body() dto: CreateDepartmentDto,
+    @CurrentUser() user: AuthUser,
+  ) {
     return await this.service.create(dto, user.id);
   }
 
@@ -61,7 +70,7 @@ export class DepartmentController {
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: EditDto,
+    @Body() dto: EditDepartmentDto,
     @CurrentUser() user: AuthUser,
   ) {
     return await this.service.update(id, dto, user.id);

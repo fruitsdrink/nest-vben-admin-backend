@@ -1,6 +1,6 @@
 import { IsIn, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
-export class CreateDto {
+export class CreateDepartmentDto {
   @IsNotEmpty({ message: '部门名称不能为空' })
   name: string;
 

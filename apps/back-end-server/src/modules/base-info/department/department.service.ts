@@ -6,7 +6,12 @@ import {
 } from '@lib/system';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { CreateDto, EditDto, FindListDto, FindManyDto } from './dto';
+import {
+  CreateDepartmentDto,
+  EditDepartmentDto,
+  FindDepartmentListDto,
+  FindDepartmentManyDto,
+} from './dto';
 
 @Injectable()
 export class DepartmentService {
@@ -16,7 +21,7 @@ export class DepartmentService {
    * @param dto 创建部门参数
    * @param userId 操作人id
    */
-  async create(dto: CreateDto, userId: bigint) {
+  async create(dto: CreateDepartmentDto, userId: bigint) {
     await this.validateOnCreate(dto);
     return await this.prisma.department.create({
       data: {
@@ -34,7 +39,7 @@ export class DepartmentService {
    * @param dto 编辑部门参数
    * @param userId 操作人id
    */
-  async update(id: number, dto: EditDto, userId: bigint) {
+  async update(id: number, dto: EditDepartmentDto, userId: bigint) {
     const { dto: formData } = await this.validateOnUpdate(id, dto);
 
     return await this.prisma.department.update({
@@ -67,7 +72,7 @@ export class DepartmentService {
    * 分页查询部门列表
    * @param pagination 分页参数
    */
-  async findList(pagination: PaginationParams<FindListDto>) {
+  async findList(pagination: PaginationParams<FindDepartmentListDto>) {
     const {
       keyword,
       page,
@@ -123,7 +128,7 @@ export class DepartmentService {
    * 查询部门列表
    * @param dto 查询参数
    */
-  async findMany(dto: FindManyDto) {
+  async findMany(dto: FindDepartmentManyDto) {
     const { keyword } = dto;
     return await this.prisma.department.findMany({
       where: {
@@ -155,7 +160,7 @@ export class DepartmentService {
    * 验证新增部门
    * @param dto 创建部门参数
    */
-  private async validateOnCreate(dto: CreateDto) {
+  private async validateOnCreate(dto: CreateDepartmentDto) {
     const { name } = dto;
     const department = await this.prisma.department.findFirst({
       where: {
@@ -173,7 +178,7 @@ export class DepartmentService {
    * @param id 部门id
    * @param dto 编辑部门参数
    */
-  private async validateOnUpdate(id: number, dto: EditDto) {
+  private async validateOnUpdate(id: number, dto: EditDepartmentDto) {
     const department = await this.prisma.department.findFirst({
       where: {
         id,
