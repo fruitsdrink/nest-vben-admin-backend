@@ -65,7 +65,7 @@ export class AuthService {
    * @returns
    */
   private async getToken(id: bigint) {
-    const payload = { sub: id };
+    const payload = { id };
     const accessToken = await this.jwtService.signAsync(payload);
     const jwtExpireIn = this.config.get('jwt.expiresIn', {
       infer: true,
