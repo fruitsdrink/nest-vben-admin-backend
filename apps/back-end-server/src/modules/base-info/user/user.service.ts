@@ -16,7 +16,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Prisma, User } from '@prisma/client';
 import fs from 'fs';
-import { CreateDto, EditDto, FindListDto, FindManyDto } from './dto';
+import {
+  CreateDto,
+  EditDto,
+  FindListDto,
+  FindManyDto,
+  ResetPasswordDto,
+} from './dto';
 
 @Injectable()
 export class UserService {
@@ -291,6 +297,31 @@ export class UserService {
     delete item.accessToken;
     delete item.refreshToken;
     delete item.openId;
+  }
+
+  /**
+   * 重置密码
+   * @param userId 当前用户id
+   * @param dto 重置密码参数
+   */
+  async resetPassword(cusrrentUserId: bigint, dto: ResetPasswordDto) {
+    if (!dto.userId) {
+      throw new BadRequestException(`用户id不能为空`);
+    }
+
+    if (!dto.password) {
+      throw new BadRequestException(`密码不能为空`);
+    }
+
+    const pwd = hashPassword(dto.password);
+    const user = await this.prisma.user.update({
+      where: { id: dto.userId },
+      data: { password: pwd, updatedAt: new Date(), updatedBy: cusrrentUserId },
+    });
+
+    this.deleteSensitiveInfo(user);
+
+    return user;
   }
 
   /**

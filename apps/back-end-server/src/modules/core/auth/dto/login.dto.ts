@@ -1,6 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
+@ApiSchema({
+  description: '登录参数',
+})
 export class LoginDto {
   @ApiProperty({
     required: true,

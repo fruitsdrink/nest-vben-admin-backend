@@ -20,7 +20,13 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { CreateDto, EditDto, FindListDto, FindManyDto } from './dto';
+import {
+  CreateDto,
+  EditDto,
+  FindListDto,
+  FindManyDto,
+  ResetPasswordDto,
+} from './dto';
 import { UserService } from './user.service';
 
 @ApiTags('用户管理')
@@ -81,5 +87,12 @@ export class UserController {
     @CurrentUser() user: AuthUser,
   ) {
     return await this.service.delete(id, user.id);
+  }
+
+  async resetPassword(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: ResetPasswordDto,
+  ) {
+    return await this.service.resetPassword(user.id, dto);
   }
 }

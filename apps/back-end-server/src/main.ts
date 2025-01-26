@@ -64,6 +64,7 @@ async function bootstrap() {
       .setDescription('Nest Vben Admin 管理端接口文档')
       .setVersion('1.0.0')
       .build();
+
     const documentFactory = () =>
       SwaggerModule.createDocument(app, swaggerConfig);
 
