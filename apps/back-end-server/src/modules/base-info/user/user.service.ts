@@ -17,10 +17,10 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma, User } from '@prisma/client';
 import fs from 'fs';
 import {
-  CreateDto,
-  EditDto,
-  FindListDto,
-  FindManyDto,
+  CreateUserDto,
+  EditUserDto,
+  FindUserListDto,
+  FindUserManyDto,
   ResetPasswordDto,
 } from './dto';
 
@@ -75,7 +75,7 @@ export class UserService {
    * @param dto 创建用户参数
    * @param userId 操作人id
    */
-  async create(dto: CreateDto, userId: bigint) {
+  async create(dto: CreateUserDto, userId: bigint) {
     const data = await this.validateOnCreate(dto);
 
     const { departmentId, roles, ...rest } = data;
@@ -98,7 +98,7 @@ export class UserService {
    * @param dto 更新参数
    * @param userId 操作人id
    */
-  async update(id: bigint, dto: EditDto, userId: bigint) {
+  async update(id: bigint, dto: EditUserDto, userId: bigint) {
     const data = await this.validateOnUpdate(id, dto);
 
     const { departmentId, roles, ...rest } = data;
@@ -141,7 +141,7 @@ export class UserService {
    * 分页查询用户列表
    * @param pagination 分页参数
    */
-  async findList(pagination: PaginationParams<FindListDto>) {
+  async findList(pagination: PaginationParams<FindUserListDto>) {
     const {
       keyword,
       page,
@@ -219,7 +219,7 @@ export class UserService {
    * 查询用户列表
    * @param dto 查询参数
    */
-  async findMany(dto: FindManyDto) {
+  async findMany(dto: FindUserManyDto) {
     const { keyword, departmentId } = dto;
 
     let where: Prisma.UserWhereInput = {
@@ -329,7 +329,7 @@ export class UserService {
    * @param dto 用户参数
    */
   private async validateOnCreateAndUpdate(
-    dto: CreateDto | EditDto,
+    dto: CreateUserDto | EditUserDto,
     id?: bigint,
   ) {
     const { username, email, avatar, departmentId, roles } = dto;
@@ -393,8 +393,8 @@ export class UserService {
    * 验证新增角色
    * @param dto 创建角色参数
    */
-  private async validateOnCreate(dto: CreateDto) {
-    const data = (await this.validateOnCreateAndUpdate(dto)) as CreateDto;
+  private async validateOnCreate(dto: CreateUserDto) {
+    const data = (await this.validateOnCreateAndUpdate(dto)) as CreateUserDto;
     data.password = hashPassword(data.password);
     return data;
   }
@@ -404,7 +404,7 @@ export class UserService {
    * @param id 用户id
    * @param dto 编辑用户参数
    */
-  private async validateOnUpdate(id: bigint, dto: EditDto) {
+  private async validateOnUpdate(id: bigint, dto: EditUserDto) {
     const data = await this.validateOnCreateAndUpdate(dto, id);
 
     if (data['password']) {
@@ -413,7 +413,7 @@ export class UserService {
     if (!data.roles) {
       data.roles = [];
     }
-    return data as EditDto;
+    return data as EditUserDto;
   }
 
   /**

@@ -21,10 +21,10 @@ import {
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import {
-  CreateDto,
-  EditDto,
-  FindListDto,
-  FindManyDto,
+  CreateUserDto,
+  EditUserDto,
+  FindUserListDto,
+  FindUserManyDto,
   ResetPasswordDto,
 } from './dto';
 import { UserService } from './user.service';
@@ -43,14 +43,14 @@ export class UserController {
   @ApiOperation({ summary: '获取用户列表' })
   @Get('baseinfo/user')
   async findList(
-    @Pagination() pagination: PaginationParams<FindListDto>,
+    @Pagination() pagination: PaginationParams<FindUserListDto>,
   ): Promise<PaginationResult<User>> {
     return await this.service.findList(pagination);
   }
 
   @ApiOperation({ summary: '查询用户' })
   @Get('baseinfo/user/find')
-  async findMany(@Query() dto: FindManyDto) {
+  async findMany(@Query() dto: FindUserManyDto) {
     return await this.service.findMany(dto);
   }
 
@@ -64,7 +64,7 @@ export class UserController {
   @ApiOperation({ summary: '创建用户' })
   @Post('baseinfo/user')
   @HttpCode(HttpStatus.OK)
-  async create(@Body() dto: CreateDto, @CurrentUser() user: AuthUser) {
+  async create(@Body() dto: CreateUserDto, @CurrentUser() user: AuthUser) {
     return await this.service.create(dto, user.id);
   }
 
@@ -73,7 +73,7 @@ export class UserController {
   @Put('baseinfo/user/:id')
   async update(
     @Param('id', ParseIntPipe) id: bigint,
-    @Body() dto: EditDto,
+    @Body() dto: EditUserDto,
     @CurrentUser() user: AuthUser,
   ) {
     return await this.service.update(id, dto, user.id);

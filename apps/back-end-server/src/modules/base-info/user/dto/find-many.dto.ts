@@ -1,6 +1,6 @@
 import { IsNumberString, IsOptional, IsString } from 'class-validator';
 
-export class FindManyDto {
+export class FindUserManyDto {
   @IsOptional()
   @IsString()
   keyword?: string;
