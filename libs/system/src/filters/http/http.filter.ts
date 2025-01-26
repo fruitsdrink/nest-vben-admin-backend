@@ -20,7 +20,7 @@ export class HttpFilter implements ExceptionFilter {
     // console.dir(exception);
     if (exception instanceof BadRequestException) {
       const responseObject = exception.getResponse() as any;
-      return response.status(HttpStatus.BAD_REQUEST).json({
+      const result = response.status(HttpStatus.BAD_REQUEST).json({
         code: HttpStatus.BAD_REQUEST,
         message:
           responseObject.message && responseObject.message.map
@@ -31,7 +31,7 @@ export class HttpFilter implements ExceptionFilter {
                 })
                 .join(',')
             : exception.message,
-        error:
+        errors:
           responseObject.message && responseObject.message.map
             ? responseObject.message.map((error) => {
                 const jsonError = JSON.parse(error);
@@ -39,6 +39,15 @@ export class HttpFilter implements ExceptionFilter {
               })
             : (exception.message ?? exception.name),
       });
+      if (result['errors']) {
+        const error = result['errors'].map((error) => {
+          return error.message ?? '';
+        });
+
+        result['error'] = error;
+      }
+
+      return result;
     }
     const status = exception.getStatus();
 

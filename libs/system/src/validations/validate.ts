@@ -16,7 +16,6 @@ export class Validate extends ValidationPipe {
         }
       });
     }
-
     return errors;
   }
 }

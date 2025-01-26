@@ -17,7 +17,7 @@ export class CreateDto {
   @IsOptional()
   remark?: string;
 
-  @IsOptional()
+  @IsNotEmpty({ message: '排序编号不能为空' })
   @IsNumber({}, { message: '排序编号必须是数字' })
   sort?: number;
 
