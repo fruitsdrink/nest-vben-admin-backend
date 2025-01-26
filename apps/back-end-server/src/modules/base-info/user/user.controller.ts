@@ -18,11 +18,12 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { CreateDto, EditDto, FindListDto, FindManyDto } from './dto';
 import { UserService } from './user.service';
 
+@ApiTags('用户管理')
 @Controller()
 export class UserController {
   constructor(private readonly service: UserService) {}

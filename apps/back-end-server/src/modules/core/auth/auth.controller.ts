@@ -10,12 +10,13 @@ import {
   Res,
   SerializeOptions,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { RealIP } from 'nestjs-real-ip';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto';
 
+@ApiTags('权限管理')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly service: AuthService) {}

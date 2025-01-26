@@ -6,7 +6,16 @@
     "deleteOutDir": true,
     "webpack": true,
     "tsConfigPath": "apps/back-end-server/tsconfig.app.json",
-    "assets": ["/**/resources/banner.txt", "**/config/config.yaml"]
+    "assets": ["/**/resources/banner.txt", "**/config/config.yaml"],
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": false,
+          "introspectComments": true
+        }
+      }
+    ]
   },
   "monorepo": true,
   "root": "apps/back-end-server",
