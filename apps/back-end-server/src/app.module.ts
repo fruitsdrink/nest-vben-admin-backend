@@ -8,6 +8,7 @@ import { WinstonModule } from 'nest-winston';
 import {
   AuthModule,
   DepartmentModule,
+  MenuModule,
   RoleModule,
   SysCacheModule,
   UserModule,
@@ -30,6 +31,7 @@ const transports = createTransport();
     SysCacheModule,
     DepartmentModule,
     RoleModule,
+    MenuModule,
   ],
   controllers: [],
   providers: [
