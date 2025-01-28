@@ -41,9 +41,11 @@ export class PrismaService
       .then(() => {
         this.logger.log('数据库连接成功');
       })
-      .catch((error) => {
+      .catch(() => {
         this.logger.error('数据库连接失败:');
-        this.logger.error(error);
+        // this.logger.error(error);
+        process.exit(1);
+        // process.kill(process.pid, 'SIGTERM');
       });
   }
 }
