@@ -58,6 +58,8 @@
 - [x] 后端：优化swagger参数
 - [x] 后端：优化Dto名称(名称唯一)，解决swagger的schemas显示model不全问题
 - [x] 前端：修改用户表单隐藏密码字段
+- [ ] 前端：清空缓冲退出系统
+- [ ] 前端：查询使用TanStack Query
 
 ## Vben修改
 
