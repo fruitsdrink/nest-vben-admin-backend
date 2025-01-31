@@ -1,0 +1,10 @@
+http:
+  host: 'http://localhost:10010'
+  port: 10010
+  enableSwagger: true
+  cors: { origin: '*' }
+jwt:
+  secret: 'secret112233'
+  expiresIn: '1d'
+  # 前端开启刷新token功能后，这个配置项必须为true
+  enableCookie: true
