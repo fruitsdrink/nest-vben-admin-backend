@@ -1,15 +1,7 @@
 import { hashPassword } from '@lib/system';
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
-
-async function main() {
-  await seedUser();
-}
-
-main();
-
-async function seedUser() {
+export default async function seed(prisma: PrismaClient) {
   const users = await prisma.user.findMany({
     where: {
       deletedAt: 0,
@@ -30,3 +22,5 @@ async function seedUser() {
     },
   });
 }
+
+export const tableName = 'user';

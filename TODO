@@ -33,4 +33,4 @@ Todo:
   ☐ 消息管理接口
   ✔ 优化swagger参数 @done(25-01-31 09:09)
   ✔ 优化Dto名称(名称唯一)，解决swagger的schemas显示model不全问题 @done(25-01-31 09:09)
-  
+  ✔ 根据数据表分离seed方法 @done(25-01-31 09:59)
