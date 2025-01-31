@@ -11,7 +11,7 @@ export class MenuController {
 
   @ApiOperation({ summary: '获取菜单列表' })
   @Get('all')
-  all(@CurrentUser() user: AuthUser) {
-    return this.service.all(user.id);
+  findAll(@CurrentUser() user: AuthUser) {
+    return this.service.findAll(user.id);
   }
 }

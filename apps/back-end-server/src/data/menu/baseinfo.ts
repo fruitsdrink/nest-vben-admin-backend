@@ -1,41 +1,8 @@
-export const dashboardMenus = [
-  {
-    // 这里固定写死 BasicLayout，不可更改
-    component: 'BasicLayout',
-    meta: {
-      icon: 'lucide:layout-dashboard',
-      order: -1,
-      title: '概览',
-    },
-    name: 'Dashboard',
-    path: '/',
-    redirect: '/analytics',
-    children: [
-      {
-        name: 'Analytics',
-        path: '/analytics',
-        component: '/dashboard/analytics/index',
-        meta: {
-          affixTab: true,
-          icon: 'lucide:area-chart',
-          title: '分析页',
-        },
-      },
-      {
-        name: 'Workspace',
-        path: '/workspace',
-        component: '/dashboard/workspace/index',
-        meta: {
-          icon: 'carbon:workspace',
-          title: '工作台',
-        },
-      },
-    ],
-  },
-];
+import { Menu } from './type';
 
-const baseInfoMenus = [
+export const baseInfoMenus: Menu[] = [
   {
+    id: 'baseinfo',
     component: 'BasicLayout',
     meta: {
       title: '基础信息',
@@ -46,6 +13,7 @@ const baseInfoMenus = [
     code: 'baseinfo',
     children: [
       {
+        id: 'baseinfo-user',
         name: 'UserManager',
         path: '/baseinfo/user',
         component: '/baseinfo/user/index',
@@ -54,26 +22,27 @@ const baseInfoMenus = [
           icon: 'lucide:user',
         },
         code: 'user',
-        accessCodes: [
+        actions: [
           {
             name: '新增',
-            code: '01',
+            code: 'add',
           },
           {
             name: '编辑',
-            code: '02',
+            code: 'edit',
           },
           {
             name: '删除',
-            code: '03',
+            code: 'delete',
           },
           {
             name: '重置密码',
-            code: '04',
+            code: 'resetPassword',
           },
         ],
       },
       {
+        id: 'baseinfo-role',
         name: 'RoleManager',
         path: '/baseinfo/role',
         component: '/baseinfo/role/index',
@@ -81,8 +50,24 @@ const baseInfoMenus = [
           title: '角色管理',
           icon: 'carbon:user-role',
         },
+        code: 'role',
+        actions: [
+          {
+            name: '新增',
+            code: 'add',
+          },
+          {
+            name: '编辑',
+            code: 'edit',
+          },
+          {
+            name: '删除',
+            code: 'delete',
+          },
+        ],
       },
       {
+        id: 'baseinfo-department',
         name: 'DepartmentManager',
         path: '/baseinfo/department',
         component: '/baseinfo/department/index',
@@ -90,9 +75,22 @@ const baseInfoMenus = [
           title: '部门管理',
           icon: 'mingcute:department-line',
         },
+        code: 'department',
+        actions: [
+          {
+            name: '新增',
+            code: 'add',
+          },
+          {
+            name: '编辑',
+            code: 'edit',
+          },
+          {
+            name: '删除',
+            code: 'delete',
+          },
+        ],
       },
     ],
   },
 ];
-
-export const menus = [...dashboardMenus, ...baseInfoMenus];

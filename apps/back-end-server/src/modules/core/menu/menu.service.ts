@@ -1,12 +1,12 @@
+import { menus } from '@/data';
 import { PrismaService } from '@lib/system';
 import { Injectable } from '@nestjs/common';
-import { menus } from './data';
 
 @Injectable()
 export class MenuService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async all(userId: bigint) {
+  async findAll(userId: bigint) {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,

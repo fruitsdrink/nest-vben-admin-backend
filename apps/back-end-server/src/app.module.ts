@@ -9,6 +9,7 @@ import {
   AuthModule,
   DepartmentModule,
   MenuModule,
+  PermissionModule,
   RoleModule,
   SysCacheModule,
   UserModule,
@@ -32,6 +33,7 @@ const transports = createTransport();
     DepartmentModule,
     RoleModule,
     MenuModule,
+    PermissionModule,
   ],
   controllers: [],
   providers: [
